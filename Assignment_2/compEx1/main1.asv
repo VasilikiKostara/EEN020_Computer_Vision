@@ -1,0 +1,69 @@
+clc;
+
+% Load
+whos("-file", "compEx1data.mat");
+data = load("compEx1data.mat", "P", "X", "imfiles", "x");
+
+P = data.P;
+X = data.X;
+imfiles = data.imfiles;
+x = data.x;
+
+P1 = P{1};
+proj1 = pflat(P1 * X);
+x1 = x{1};
+im1 = imread(imfiles{1});
+
+T1 = [1 0 0 0; 0 3 0 0; 0 0 1 0; 1/8 1/8 0 1];
+T2 = [1 0 0 0; 0 1 0 0; 0 0 1 0; 1/16 1/16 0 1];
+trans1 = pflat(T1 * X);
+trans2 = pflat(T2 * X);
+
+proj_trans1 = pflat(P1 / T1 * trans1);
+proj_trans2 = pflat(P1 * trans2);
+
+
+figure(1);
+plot_points_3D(X);
+hold on;
+for j = 1:length(P)
+    plotcams(P(j))
+end
+hold off;
+
+figure(2);
+visible = isfinite (x1(1 ,:));
+imshow(im1)
+hold on;
+plot(proj1(1, visible), proj1(2, visible), ' ro ');
+plot(x1(1, visible), x1(2, visible ), ' * ', 'MarkerEdgeColor', '#77AC30');
+hold off;
+
+figure(3);
+plot_points_3D(X);
+hold on;
+plot_points_3D(trans1);
+plot_points_3D(trans2);
+for j = 1:length(P)
+    plotcams(P(j))
+end
+hold off;
+
+figure(4);
+subplot(1, 2, 1);
+imshow(im1);
+hold on;
+plot_points_2D(proj_trans1);
+plot_points_2D(x1);
+hold off;
+
+subplot(1, 2, 2);
+imshow(im1);
+hold on;
+plot_points_2D(proj_trans2);
+plot_points_2D(x1);
+hold off;
+
+
+
+
